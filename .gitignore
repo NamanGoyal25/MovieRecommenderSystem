@@ -5,3 +5,4 @@ __pycache__/
 *$py.class
 .DS_Store
 .streamlit/secrets.toml
+similarity.pkl
