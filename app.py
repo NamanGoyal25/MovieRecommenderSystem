@@ -9,20 +9,27 @@ load_dotenv()  # Add this near the top of your script
 
 # Modified part of your code
 def fetch_poster(movie_id):
-    api_key = st.secrets["tmdb_api_key"]  # For Streamlit Cloud deployment
-    # Fallback to environment variable for local development
-    if "tmdb_api_key" not in st.secrets:
-        import os
-        api_key = os.environ.get("TMDB_API_KEY")
+    api_key = None
+    try:
+        api_key = st.secrets["tmdb_api_key"]  # Prioritize Streamlit secrets
+    except KeyError:
+        api_key = os.getenv("TMDB_API_KEY")  # Fallback to .env
+        if not api_key:
+            st.error("TMDB API key not found. Please configure it in .streamlit/secrets.toml or .env.")
+            return None
 
-    response = requests.get(f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US')
-    data = response.json()
-    return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
-# def fetch_poster(movie_id):
-#     response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key=445a186720c0bc93aba3895bfe64ac69&language=en-US'.format(movie_id))
-#     data = response.json()
-#     return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
-#
+    try:
+        response = requests.get(f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US')
+        response.raise_for_status()  # Raise an error for bad responses
+        data = response.json()
+        if 'poster_path' in data:
+            return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+        else:
+            st.warning(f"No poster found for movie ID {movie_id}")
+            return None
+    except requests.RequestException as e:
+        st.error(f"Error fetching poster for movie ID {movie_id}: {e}")
+        return None
 
 def recommend(movie):
     movie_index = movies[movies['title'] == movie].index[0]

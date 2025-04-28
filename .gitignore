@@ -6,3 +6,5 @@ __pycache__/
 .DS_Store
 .streamlit/secrets.toml
 similarity.pkl
+secrets.toml
+.streamlit
