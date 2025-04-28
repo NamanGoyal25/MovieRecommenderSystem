@@ -1,0 +1,13 @@
+import numpy as np
+import pandas as pd
+
+movies = pd.read_csv(
+    r'C:\Users\naman\OneDrive\Documents\MachineLearningProjects\MovieRecommenderSystem\archive ('
+    r'3)\tmdb_5000_movies.csv')
+
+credits = pd.read_csv(
+    r'C:\Users\naman\OneDrive\Documents\MachineLearningProjects\MovieRecommenderSystem\archive ('
+    r'3)\tmdb_5000_credits.csv')
+
+# print(credits.head(1))
+movies = movies.merge(credits, on='title').shape
